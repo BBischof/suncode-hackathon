@@ -6,7 +6,9 @@ import pandas as pd
 import numpy as np
 import sys, os
 
-def get_solar(lat = 33.2164, lon = -97.1292, year = 2016, api_key = 'FWJi89yv0jtx32Owfs92k8inmBmozxlv2TrwW2dt', your_name = 'Jeff+Larson', your_email = 'jeffonabike@gmail.com'):
+## preset for Oakland, CA 2016
+
+def get_solar(lat = 37.8043700, lon = -122.2708000, year = 2016, api_key = 'FWJi89yv0jtx32Owfs92k8inmBmozxlv2TrwW2dt', your_name = 'Jeff+Larson', your_email = 'jeffonabike@gmail.com'):
 	# Declare all variables as strings. Spaces must be replaced with '+', i.e., change 'John Smith' to 'John+Smith'.
 
 	# Set the attributes to extract (e.g., dhi, ghi, etc.), separated by commas.
@@ -35,3 +37,6 @@ def get_solar(lat = 33.2164, lon = -97.1292, year = 2016, api_key = 'FWJi89yv0jt
 	# Set the time index in the pandas dataframe:
 	df = df.set_index(pd.date_range('1/1/{yr}'.format(yr=year), freq=interval+'Min', periods=525600/int(interval)))
 	return info, df
+
+if __name__ == '__main__':
+	pass
