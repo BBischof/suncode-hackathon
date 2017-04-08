@@ -16,6 +16,15 @@ class state_transitions(object):
   def get_transition_cost(self):
     return (self.building_use_from_grid*self.state.grid_cost + self.building_use_from_batt*self.battery.cost + self.charge_batt_from_grid*self.state.grid_cost)
 
+  def transpile_transition_to_json(self):
+    return {
+        'building_use_from_pv' : self.building_use_from_pv,
+        'building_use_from_grid' : self.building_use_from_grid,
+        'building_use_from_batt' : self.building_use_from_batt,
+        'charge_batt_from_grid' : self.charge_batt_from_grid,
+        'charge_batt_from_pv' : self.charge_batt_from_pv
+    }
+
 class battery(object):
   """docstring for battery"""
   def __init__(self, c_rate, cost, max_capacity):
@@ -77,6 +86,7 @@ def main():
   first_battery = battery(.5, .15, 60)
   first_state = state(2,.2,1)
   first_transition = state_transitions(first_state, first_battery,1,1,1,1,1)
+  print first_transition.transpile_transition_to_json()
   print first_transition.get_transition_cost()
 
 if __name__ == '__main__':
