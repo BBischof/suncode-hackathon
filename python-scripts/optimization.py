@@ -39,6 +39,9 @@ class battery(object):
   def draw_cost(self):
     return self.base_cost
 
+  def update_charge_level(self, change):
+    self.charge_level = self.charge_level - change
+
 
 class state(object):
   """variable values for state"""
@@ -55,7 +58,7 @@ def convert_to_charge_rate(kwh, battery):
 def evaluate_naive_model(state, battery):
   delta_pv_less_demand = (state.pv - state.demand)
   if delta_pv_less_demand > 0:
-    if batt_charge_level < 1:
+    if battery.charge_level < 1:
       charge_batt_from_pv = delta_pv_less_demand if (convert_to_charge_rate(delta_pv_less_demand, battery) <= battery.c_rate) else (battery.max_capacity*battery.c_rate)
       building_use_from_pv = state.demand
       building_use_from_grid, building_use_from_batt, charge_batt_from_grid = 0,0,0
@@ -73,7 +76,7 @@ def evaluate_naive_model(state, battery):
       charge_batt_from_pv, building_use_from_batt, charge_batt_from_grid = 0,0,0
       return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
     else:
-      if state.demand<(battery.max_capacity*battery.charge_level):
+      if -delta_pv_less_demand<(battery.max_capacity*battery.charge_level):
         building_use_from_pv = state.pv
         building_use_from_batt = -delta_pv_less_demand
         charge_batt_from_pv, building_use_from_grid, charge_batt_from_grid = 0,0,0
@@ -81,7 +84,7 @@ def evaluate_naive_model(state, battery):
       else:
         building_use_from_pv = state.pv
         building_use_from_batt = battery.max_capacity*battery.charge_level
-        building_use_from_grid = delta_pv_less_demand - (battery.max_capacity*battery.charge_level)
+        building_use_from_grid = -delta_pv_less_demand - (battery.max_capacity*battery.charge_level)
         charge_batt_from_pv, charge_batt_from_grid = 0,0
         return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
 
