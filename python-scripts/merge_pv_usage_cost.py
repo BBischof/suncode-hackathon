@@ -28,7 +28,7 @@ def merge_pv_usage(pv_file, bldg_file):
 	pv = pd.read_csv('data-sources/{}'.format(pv_file))
 	bldg = pd.read_csv('data-sources/{}'.format(bldg_file), header=None)
 	bldg.columns = ['date', 'time', 'kw']
-	bldg.index = pd.to_datetime(bldg['date'] + ' ' +bldg['time'])
+	bldg.index = pd.to_datetime(bldg['date'] + ' ' + bldg['time'])
 	bldg = bldg.drop(['date', 'time'], axis  = 1)
 	max_bldg = bldg['kw'].max()
 
@@ -40,7 +40,7 @@ def merge_pv_usage(pv_file, bldg_file):
 	merged = pv.merge(bldg, left_index = True, right_index = True, suffixes = ['_prod', '_used'])
 	scaler = max_bldg/max_pv
 	merged['kw_prod'] *= scaler
-	merged['kw_used'] *= -1
+	# merged['kw_used'] *= -1
 	merged = merged.fillna(method = 'ffill')
 	return merged
 
@@ -51,6 +51,12 @@ def merge_pv_usage_cost(df):
 
 def jack_up_production(df, production_multiplier = 1.5):
 	df['kw_prod_jacked'] = df['kw_prod'] * production_multiplier
+	df = df.rename(columns= {
+					'kw_used': 'demand', 
+					'tou_rate' : 'gridcost',
+					'kw_prod_jacked' : 'pv'}
+					)
+	df = df.drop('kw_prod', axis = 1)
 	return 	df
 	
 if __name__ == '__main__':
