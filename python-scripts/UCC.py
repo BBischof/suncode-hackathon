@@ -16,11 +16,11 @@ def date_tou_rate(t):
 	seconds = float(t.hour*3600 + t.minute*60 + t.second)
 	if t.month >= 5 and t.month <= 10:
 		if t.weekday() in range(5):
-			return summer_tou['weekday'][summer_tou['weekday'].keys()[[(lambda x: 1 if seconds>x[0] and seconds<x[1] else 0)(x) for x in [(float(key.split(',')[0]), float(key.split(',')[1])) for key in summer_tou['weekday'].keys()]].index(1)]]
+			return summer_tou['weekday'][summer_tou['weekday'].keys()[[(lambda x: 1 if seconds>=x[0] and seconds<x[1] else 0)(x) for x in [(float(key.split(',')[0]), float(key.split(',')[1])) for key in summer_tou['weekday'].keys()]].index(1)]]
 		else: 
 			return 0.202
 	else:
 		if t.weekday() in range(5):
-			return winter_tou['weekday'][winter_tou['weekday'].keys()[[(lambda x: 1 if seconds>x[0] and seconds<x[1] else 0)(x) for x in [(float(key.split(',')[0]), float(key.split(',')[1])) for key in winter_tou['weekday'].keys()]].index(1)]]
+			return winter_tou['weekday'][winter_tou['weekday'].keys()[[(lambda x: 1 if seconds>=x[0] and seconds<x[1] else 0)(x) for x in [(float(key.split(',')[0]), float(key.split(',')[1])) for key in winter_tou['weekday'].keys()]].index(1)]]
 		else:
 			return 0.2
