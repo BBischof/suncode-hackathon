@@ -15,7 +15,7 @@ class state_transitions(object):
     self.charge_batt_from_pv = charge_batt_from_pv
 
   def get_transition_cost(self):
-    return (self.building_use_from_grid*self.state.grid_cost + self.building_use_from_batt*self.battery.cost + self.charge_batt_from_grid*self.state.grid_cost)
+    return (self.building_use_from_grid*self.state.grid_cost + self.building_use_from_batt*self.battery.draw_cost() + self.charge_batt_from_grid*self.state.grid_cost)
 
   def transpile_transition_to_json(self):
     return {
@@ -29,11 +29,15 @@ class state_transitions(object):
 
 class battery(object):
   """docstring for battery"""
-  def __init__(self, c_rate, cost, max_capacity):
+  def __init__(self, c_rate, cost, max_capacity, expected_cycles):
     self.c_rate = c_rate
     self.charge_level = 1
     self.cost = cost
     self.max_capacity = max_capacity
+    self.base_cost = 0.15 #'''needs to be the normal usage expected cost'''
+
+  def draw_cost(self):
+    return self.base_cost
 
 
 class state(object):
@@ -62,7 +66,7 @@ def evaluate_naive_model(state, battery):
       charge_batt_from_pv, building_use_from_batt, charge_batt_from_grid = 0,0,0
       return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
   else:
-    cost_delta_batt_less_grid = (battery.cost - state.grid_cost)
+    cost_delta_batt_less_grid = (battery.draw_cost() - state.grid_cost)
     if cost_delta_batt_less_grid > 0:
       building_use_from_pv = state.pv
       building_use_from_grid = -delta_pv_less_demand

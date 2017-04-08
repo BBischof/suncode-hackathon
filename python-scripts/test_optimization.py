@@ -2,7 +2,7 @@ import pytest
 import optimization
 
 def test_battery_creation():
-  test_battery = optimization.battery(.5, .15, 60)
+  test_battery = optimization.battery(.5, .15, 60, 6000)
   assert test_battery.c_rate == .5
   assert test_battery.charge_level == 1
   assert test_battery.cost == .15
@@ -15,14 +15,14 @@ def test_state_creation():
   assert test_state.pv == 1
 
 def test_transition_creation():
-  test_battery = optimization.battery(.5, .15, 60)
+  test_battery = optimization.battery(.5, .15, 60, 6000)
   test_state = optimization.state('2014-01-01 00:00:00', 2,.2,1)
   test_transition = optimization.state_transitions(test_state, test_battery,1,1,1,1,1)
   assert test_transition.transpile_transition_to_json() == {'timestamp': '2014-01-01 00:00:00', 'building_use_from_pv' : 1, 'building_use_from_grid' : 1, 'building_use_from_batt' : 1, 'charge_batt_from_grid' : 1, 'charge_batt_from_pv' : 1 }
   assert test_transition.get_transition_cost() == .55
 
 def test_naive_model():
-  test_battery = optimization.battery(.5, .15, 60)
+  test_battery = optimization.battery(.5, .15, 60, 6000)
   test_state = optimization.state('2014-01-01 00:00:00', 2,.2,1)
   naive_model_transition = optimization.evaluate_naive_model(test_state, test_battery)
   assert naive_model_transition.get_transition_cost() == 0.15
