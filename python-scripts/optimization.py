@@ -36,38 +36,38 @@ class state(object):
 def convert_to_charge_rate(kwh, battery):
   return (kwh/float(battery.max_capacity))
 
-def evaluated_naive_model(state,battery):
+def evaluate_naive_model(state, battery):
   delta_pv_less_demand = (state.pv - state.demand)
   if delta_pv_less_demand > 0:
     if batt_charge_level < 1:
       charge_batt_from_pv = delta_pv_less_demand if (convert_to_charge_rate(delta_pv_less_demand, battery) <= battery.c_rate) else (battery.max_capacity*battery.c_rate)
       building_use_from_pv = state.demand
       building_use_from_grid, building_use_from_batt, charge_batt_from_grid = 0,0,0
-      return state_transitions(state, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
+      return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
     else:
       building_use_from_pv = state.demand
       building_use_from_grid = -delta_pv_less_demand
       charge_batt_from_pv, building_use_from_batt, charge_batt_from_grid = 0,0,0
-      return state_transitions(state, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
+      return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
   else:
-    cost_delta_batt_less_grid = (state.batt_cost - state.grid_cost)
+    cost_delta_batt_less_grid = (battery.cost - state.grid_cost)
     if cost_delta_batt_less_grid > 0:
       building_use_from_pv = state.pv
       building_use_from_grid = -delta_pv_less_demand
       charge_batt_from_pv, building_use_from_batt, charge_batt_from_grid = 0,0,0
-      return state_transitions(state, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
+      return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
     else:
       if state.demand<(battery.max_capacity*battery.charge_level):
         building_use_from_pv = state.pv
         building_use_from_batt = -delta_pv_less_demand
         charge_batt_from_pv, building_use_from_grid, charge_batt_from_grid = 0,0,0
-        return state_transitions(state, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
+        return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
       else:
         building_use_from_pv = state.pv
         building_use_from_batt = battery.max_capacity*battery.charge_level
         building_use_from_grid = delta_pv_less_demand - (battery.max_capacity*battery.charge_level)
         charge_batt_from_pv, charge_batt_from_grid = 0,0
-        return state_transitions(state, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
+        return state_transitions(state, battery, building_use_from_pv, building_use_from_grid, building_use_from_batt, charge_batt_from_grid, charge_batt_from_pv)
 
 
 def convert_usage_demand_to_kwh(dataframe, data_column):
