@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 
 STEPS_PER_HOUR = 4
 
@@ -18,6 +19,7 @@ class state_transitions(object):
 
   def transpile_transition_to_json(self):
     return {
+        'timestamp': self.state.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
         'building_use_from_pv' : self.building_use_from_pv,
         'building_use_from_grid' : self.building_use_from_grid,
         'building_use_from_batt' : self.building_use_from_batt,
@@ -36,7 +38,8 @@ class battery(object):
 
 class state(object):
   """variable values for state"""
-  def __init__(self, demand, grid_cost, pv):
+  def __init__(self, timestamp, demand, grid_cost, pv):
+    self.timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
     self.demand = demand
     self.grid_cost = grid_cost
     self.pv = pv
