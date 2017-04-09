@@ -42,6 +42,8 @@ class battery(object):
   def update_charge_level(self, change):
     self.charge_level = self.charge_level - change
 
+  def update_capacity_level(self, change):
+    self.max_capacity = self.max_capacity - change
 
 class state(object):
   """variable values for state"""
